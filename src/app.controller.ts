@@ -19,9 +19,9 @@ export class AppController {
     return {
       name: this.configService.get<string>('APP_NAME'),
       desc:
-        'MyTelU - ' +
+        'Telkom University - ' +
         this.configService.get<string>('APP_NAME') +
-        ' API Service | Telkom University',
+        ' API Service',
       version: '1.0.0',
       status: 'API Services Ready!',
     };
