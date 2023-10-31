@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleChat {
+  SYSTEM    @map("system")
+  USER      @map("user")
+  ASSISTANT @map("assistant")
+  FUNCTION  @map("function")
+}
+
+model User {
+  id          String            @id @default(uuid())
+  email       String            @unique
+  password    String
+  name        String
+  imgUrl      String?           @map("img_url")
+  createdAt   DateTime?         @default(now()) @map("created_at")
+  updatedAt   DateTime?         @updatedAt @map("updated_at")
+  ChatHistory ListChatHistory[]
+
+  @@map("users")
+}
+
+model ListChatHistory {
+  id          String        @id @default(uuid())
+  userId      String        @map("user_id")
+  title       String
+  path        String
+  createdAt   DateTime?     @default(now()) @map("created_at")
+  updatedAt   DateTime?     @updatedAt @map("updated_at")
+  User        User          @relation(fields: [userId], references: [id])
+  ChatHistory ChatHistory[]
+
+  @@map("list_chat_histories")
+}
+
+model ChatHistory {
+  id                String           @id @default(uuid())
+  order             Int              @default(autoincrement())
+  role              RoleChat
+  messages          String
+  listChatHistoryId String           @map("list_chat_history_id")
+  createdAt         DateTime?        @default(now()) @map("created_at")
+  updatedAt         DateTime?        @updatedAt @map("updated_at")
+  ListChatHistory   ListChatHistory? @relation(fields: [listChatHistoryId], references: [id])
+
+  @@map("chat_histories")
+}
