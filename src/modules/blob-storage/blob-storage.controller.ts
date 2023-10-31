@@ -17,7 +17,7 @@ export class BlobStorageController {
     const file = await this.blobStorageService.getContent(query.filename);
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename=${query.filename}`,
+      'Content-Disposition': `inline; filename=${query.filename}`,
     });
     return new StreamableFile(file);
   }
