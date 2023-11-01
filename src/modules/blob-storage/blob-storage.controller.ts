@@ -18,6 +18,7 @@ export class BlobStorageController {
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': `inline; filename=${query.filename}`,
+      'Content-Security-Policy': 'frame-ancestors http://localhost:3000',
     });
     return new StreamableFile(file);
   }
