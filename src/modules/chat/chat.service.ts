@@ -5,7 +5,7 @@ import { CognitiveSearchService } from '../cognitive-search/cognitive-search.ser
 import { OpenAiService } from '../openai/openai.service';
 import { ChatApproachContextDto, HistoryMessageDto } from './dto/chat.dto';
 
-const SYSTEM_MESSAGE_CHAT_CONVERSATION = `Assistant helps the Consto Real Estate company customers with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
+const SYSTEM_MESSAGE_CHAT_CONVERSATION = `Assistant helps the Telkom University with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
 Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
 For tabular information return it as an html table. Do not return markdown format. Answer in the language used in the last question.
 Each source has a name followed by colon and the actual information, always include the source name for each fact you use in the response. Use square brackets to reference the source, e.g. [info1.txt]. Don't combine sources, list each source separately, e.g. [info1.txt][info2.pdf].
@@ -72,7 +72,7 @@ export class ChatService {
     // STEP 2: Retrieve relevant documents from the search index with the GPT optimized query
     // -----------------------------------------------------------------------
 
-    const { query, results, content, citationId } =
+    const { query, results, content, citationIds } =
       await this.searchService.searchDocuments(queryText, context);
 
     context.suggest_followup_questions = true;
@@ -111,16 +111,15 @@ export class ChatService {
       content,
     );
 
-    const finalMsg =
-      await this.openAiService.chatClient.chat.completions.create({
-        model: appConfig.azureOpenAiChatGptModel,
-        messages: msgForGenerateAnswer,
-        temperature: Number(context?.temperature ?? 0.7),
-        n: 1,
-        stream: true,
-      });
+    const bodyGenerateMsg = {
+      model: appConfig.azureOpenAiChatGptModel,
+      messages: msgForGenerateAnswer,
+      temperature: Number(context?.temperature ?? 0.7),
+      n: 1,
+      stream: true,
+    };
 
-    return { finalMsg, results, citationId };
+    return { bodyGenerateMsg, results, citationIds };
   }
 
   protected getMessageHistory(

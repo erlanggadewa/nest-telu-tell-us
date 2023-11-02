@@ -8,7 +8,7 @@ export interface SearchDocumentsResult {
   query: string;
   results: string[];
   content: string;
-  citationId: string[];
+  citationIds: string[];
 }
 
 @Injectable()
@@ -121,7 +121,7 @@ export class CognitiveSearchService {
       query: queryText ?? '',
       results,
       content,
-      citationId,
+      citationIds: citationId,
     };
   }
 }
