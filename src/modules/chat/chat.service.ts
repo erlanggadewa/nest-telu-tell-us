@@ -40,9 +40,10 @@ export class ChatService {
     private searchService: CognitiveSearchService,
     private openAiService: OpenAiService,
   ) {}
-  async baseRun(
+  async createChat(
     history: HistoryMessageDto[],
     context: ChatApproachContextDto = {},
+    userCitationId?: string,
   ) {
     const userQuery =
       'Generate search query for: ' + history[history.length - 1].content;
@@ -71,9 +72,28 @@ export class ChatService {
 
     // STEP 2: Retrieve relevant documents from the search index with the GPT optimized query
     // -----------------------------------------------------------------------
+    let searchDocumentsResult: {
+      query: string;
+      results: string[];
+      content: string;
+      citationIds: string[];
+    };
 
-    const { query, results, content, citationIds } =
-      await this.searchService.searchDocuments(queryText, context);
+    if (userCitationId) {
+      searchDocumentsResult =
+        await this.searchService.searchDocumentByCitationId(
+          context,
+          queryText,
+          userCitationId,
+        );
+    } else {
+      searchDocumentsResult = await this.searchService.searchDocuments(
+        context,
+        queryText,
+      );
+    }
+
+    const { query, results, content, citationIds } = searchDocumentsResult;
 
     context.suggest_followup_questions = true;
 

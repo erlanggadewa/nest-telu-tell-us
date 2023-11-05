@@ -1,9 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { appConfig } from 'src/config/config';
 import { parseBoolean, removeNewlines } from 'src/utils/string';
 import { AzureService } from '../azure/azure.service';
 import { OpenAiService } from '../openai/openai.service';
-import { ApproachContext } from './cognitive-search.interface';
+import {
+  ApproachCreateChat,
+  ApproachCreateChatByCitationId,
+} from './cognitive-search.interface';
 export interface SearchDocumentsResult {
   query: string;
   results: string[];
@@ -27,8 +30,8 @@ export class CognitiveSearchService {
   }
 
   async searchDocuments(
-    query?: string,
-    context: ApproachContext = {},
+    context: ApproachCreateChat,
+    query: string,
   ): Promise<SearchDocumentsResult> {
     const hasText = ['text', 'hybrid', undefined].includes(
       context?.retrieval_mode,
@@ -116,6 +119,77 @@ export class CognitiveSearchService {
         citationId.push(document['id']);
       }
     }
+    const content = results.join('\n');
+    return {
+      query: queryText ?? '',
+      results,
+      content,
+      citationIds: citationId,
+    };
+  }
+
+  async searchDocumentByCitationId(
+    context: ApproachCreateChatByCitationId,
+    query: string,
+    userCitationId: string,
+  ): Promise<SearchDocumentsResult> {
+    const hasText = ['text', 'hybrid', undefined].includes(
+      context?.retrieval_mode,
+    );
+    const hasVectors = ['vectors', 'hybrid', undefined].includes(
+      context?.retrieval_mode,
+    );
+    const useSemanticCaption =
+      parseBoolean(context?.semantic_captions) && hasText;
+
+    // If retrieval mode includes vectors, compute an embedding for the query
+    let queryVector;
+    if (hasVectors) {
+      const openAiEmbeddings = await this.openAiService.getEmbeddings();
+
+      const result = await openAiEmbeddings.create({
+        model: this.embeddingModel,
+        input: query!,
+      });
+      queryVector = result.data[0].embedding;
+    }
+
+    // Only keep the text query if the retrieval mode uses text, otherwise drop it
+    const queryText = hasText ? query : '';
+
+    // Use semantic L2 reranker if requested and if retrieval mode is text or hybrid (vectors + text)
+    const searchResults = await this.searchService.searchIndex.getDocument(
+      userCitationId,
+      {
+        onResponse: (response) => {
+          if (response.status === 404)
+            throw new BadRequestException('Citation ID not found');
+        },
+      },
+    );
+
+    const results: string[] = [];
+    const citationId: string[] = [];
+    if (useSemanticCaption) {
+      // TODO: ensure typings
+      const document = searchResults;
+      const captions = document['@search.captions'];
+      const captionsText = captions?.map((c: any) => c.text).join(' . ');
+      results.push(
+        `${document[this.sourcePageField]}: ${removeNewlines(captionsText)}`,
+      );
+      citationId.push(document['id']);
+    } else {
+      // TODO: ensure typings
+      const document = searchResults;
+      results.push(
+        `${document[this.sourcePageField]}: ${removeNewlines(
+          document[this.contentField],
+        )}`,
+      );
+      citationId.push(document['id']);
+    }
+
     const content = results.join('\n');
     return {
       query: queryText ?? '',

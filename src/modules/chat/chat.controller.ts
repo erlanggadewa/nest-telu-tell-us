@@ -1,7 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ChatService } from './chat.service';
-import { BodyChatMessageDto } from './dto/chat.dto';
+import {
+  BodyChatMessageByCitationIdDto,
+  BodyChatMessageDto,
+} from './dto/chat.dto';
 
 @ApiTags('chat')
 @Controller('chat')
@@ -16,11 +19,30 @@ export class ChatController {
       bodyGenerateMsg,
       results: dataPoints,
       citationIds,
-    } = await this.chatService.baseRun(messages, req.context);
+    } = await this.chatService.createChat(messages, req.context);
+
+    return { bodyGenerateMsg, dataPoints, citationIds };
+  }
+
+  @Post('/citation')
+  async createMessageByCitationId(@Body() req: BodyChatMessageByCitationIdDto) {
+    const { messages } = req;
+
+    const {
+      bodyGenerateMsg,
+      results: dataPoints,
+      citationIds,
+    } = await this.chatService.createChat(
+      messages,
+      req.context,
+      req.citationId,
+    );
 
     return { bodyGenerateMsg, dataPoints, citationIds };
   }
 
   @Post('/history')
-  async createHistory() {}
+  async createHistory() {
+    return 'method not implemented';
+  }
 }
