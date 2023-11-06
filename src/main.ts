@@ -13,7 +13,6 @@ import helmet from 'helmet';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { AppModule } from './app.module';
 require('dotenv').config();
-const { setLogLevel } = require('@azure/logger');
 
 async function bootstrap() {
   // setLogLevel('info');
@@ -91,7 +90,7 @@ async function bootstrap() {
     customOptions,
   );
 
-  await app.listen(parseInt(configService.get('PORT', '3000'), 10));
+  await app.listen(configService.get('PORT', 3000));
   logger.verbose(`Application is running on: ${await app.getUrl()}`);
   logger.verbose(
     `Swagger API is running on: ${await app.getUrl()}/${configService.get(
@@ -99,4 +98,7 @@ async function bootstrap() {
     )}/api`,
   );
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.log(`Fatal error during initialization:`, err);
+  process.exit(1);
+});
