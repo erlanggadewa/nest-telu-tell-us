@@ -1,6 +1,13 @@
-import { Controller, Get, Param, Res, StreamableFile } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Req,
+  Res,
+  StreamableFile,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
 import { BlobStorageService } from './blob-storage.service';
 import { GetBlobFileDto } from './dto/blob-storage.dto';
 
@@ -11,6 +18,7 @@ export class BlobStorageController {
 
   @Get('/:filename')
   async getContent(
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     @Param() query: GetBlobFileDto,
   ) {
@@ -18,8 +26,11 @@ export class BlobStorageController {
     res.set({
       'Content-Type': 'application/pdf',
       'Content-Disposition': `inline; filename=${query.filename}`,
-      'Content-Security-Policy': 'frame-ancestors http://localhost:3000',
+      'Content-Security-Policy': `frame-ancestors ${req.protocol}://${req.get(
+        'Host',
+      )}`,
     });
+
     return new StreamableFile(file);
   }
 }
