@@ -4,22 +4,23 @@ async function main() {
   const users = await prisma.user.createMany({
     data: [
       {
-        id: 'clo8f79zt0000founbwnkg8tr',
+        id: 'ba4a1c99-97ba-4ee0-8fb6-78d64a371083',
         email: 'todi@email.com',
         name: 'Todi Mahendra',
+        imgUrl: 'https://picsum.photos/600',
         password:
           '$2a$10$30d0kBlr22BKhgey27KxZu08bCNRTL5VYyUe3EPjRHpQBaVgnDB0C',
       },
       {
-        id: 'clo8f7df50001foun64wl3cf6',
+        id: '87639b63-e1f6-4b31-b061-f20fc63840dd',
         email: 'maria@email.com',
         name: 'Maria Oktavia',
+        imgUrl: 'https://picsum.photos/600',
         password:
           '$2a$10$30d0kBlr22BKhgey27KxZu08bCNRTL5VYyUe3EPjRHpQBaVgnDB0C',
       },
     ],
   });
-  console.log('🚀 ~ file: seed.ts:5 ~ main ~ users:', users);
 }
 main()
   .then(async () => {

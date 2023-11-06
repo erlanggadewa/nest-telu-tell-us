@@ -44,8 +44,10 @@ export class BodyChatMessageDto {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   id?: string;
+
   @ApiPropertyOptional()
   context?: ChatApproachContextDto;
+
   @ApiProperty({
     example: [
       {
@@ -63,6 +65,7 @@ export class BodyChatMessageDto {
       },
     ],
   })
+  @IsNotEmpty()
   messages: HistoryMessageDto[];
 }
 
@@ -74,12 +77,15 @@ export class BodyChatMessageByCitationIdDto {
   })
   @IsNotEmpty()
   citationId: string;
+
   @ApiPropertyOptional({
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   id?: string;
+
   @ApiPropertyOptional()
   context?: ChatByCitationIdApproachContextDto;
+
   @ApiProperty({
     example: [
       {
@@ -88,5 +94,21 @@ export class BodyChatMessageByCitationIdDto {
       },
     ],
   })
+  @IsNotEmpty()
   messages: HistoryMessageDto[];
+}
+
+export class BodyCreateHistoryDto {
+  @ApiProperty({
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsNotEmpty()
+  userId: string;
+
+  @ApiProperty({})
+  @IsNotEmpty()
+  title: string;
+
+  @ApiPropertyOptional({})
+  path?: string;
 }

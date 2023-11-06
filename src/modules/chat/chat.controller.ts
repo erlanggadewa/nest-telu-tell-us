@@ -4,6 +4,7 @@ import { ChatService } from './chat.service';
 import {
   BodyChatMessageByCitationIdDto,
   BodyChatMessageDto,
+  BodyCreateHistoryDto,
 } from './dto/chat.dto';
 
 @ApiTags('chat')
@@ -42,7 +43,7 @@ export class ChatController {
   }
 
   @Post('/history')
-  async createHistory() {
+  async createHistory(@Body() req: BodyCreateHistoryDto) {
     return 'method not implemented';
   }
 }
