@@ -19,6 +19,7 @@ export interface AppConfig {
   azureOpenAiKey: string;
   azureCognitiveKey: string;
   azureOpenAiApiVersion: string;
+  feUrl: string;
 }
 
 export const appConfig: AppConfig = {
@@ -43,6 +44,7 @@ export const appConfig: AppConfig = {
   azureCognitiveKey: process.env.AZURE_COGNITIF_API_KEY || '',
   azureOpenAiApiVersion: process.env.AZURE_OPENAI_API_VERSION || '2023-05-15',
   appName: process.env.APP_NAME || '',
+  feUrl: process.env.FE_URL || '',
 };
 
 export const appConfigValidationSchema = Joi.object({
@@ -62,6 +64,7 @@ export const appConfigValidationSchema = Joi.object({
   AZURE_OPENAI_API_KEY: Joi.string().required(),
   AZURE_COGNITIF_API_KEY: Joi.string().required(),
   AZURE_OPENAI_API_VERSION: Joi.string().required(),
+  FE_URL: Joi.string().required(),
   APP_NAME: Joi.string().required(),
   NODE_ENV: Joi.string()
     .valid('development', 'production', 'test', 'provision')
