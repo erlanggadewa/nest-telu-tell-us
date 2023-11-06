@@ -90,7 +90,7 @@ async function bootstrap() {
     customOptions,
   );
 
-  await app.listen(configService.get('PORT', 3000));
+  await app.listen(parseInt(configService.get('PORT', '3000'), 10));
   logger.verbose(`Application is running on: ${await app.getUrl()}`);
   logger.verbose(
     `Swagger API is running on: ${await app.getUrl()}/${configService.get(
