@@ -9,7 +9,7 @@ import { BlobStorageService } from './blob-storage.service';
 export class BlobStorageController {
   constructor(private readonly blobStorageService: BlobStorageService) {}
 
-  @Get(':filename')
+  @Get('/:filename')
   async getContent(
     @Res({ passthrough: true }) res: Response,
     @Param('filename') filename: string,
