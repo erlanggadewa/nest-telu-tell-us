@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Res, StreamableFile } from '@nestjs/common';
+import { Body, Controller, Post, Res, StreamableFile } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { appConfig } from 'src/config/config';
@@ -10,15 +10,15 @@ import { GetBlobFileDto } from './dto/blob-storage.dto';
 export class BlobStorageController {
   constructor(private readonly blobStorageService: BlobStorageService) {}
 
-  @Get('/:filename')
+  @Post()
   async getContent(
     @Res({ passthrough: true }) res: Response,
-    @Param() query: GetBlobFileDto,
+    @Body() query: GetBlobFileDto,
   ) {
     const file = await this.blobStorageService.getContent(query.filename);
     res.set({
       'Content-Type': 'application/pdf',
-      'Content-Disposition': `inline; filename=${query.filename}`,
+      'Content-Disposition': `inline`,
       'Content-Security-Policy': `frame-ancestors ${appConfig.feUrl}`,
     });
 
