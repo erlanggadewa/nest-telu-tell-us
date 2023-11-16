@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ChatCompletionMessageParam } from 'openai/resources';
 import { appConfig } from 'src/config/config';
-import { CognitiveSearchService } from '../cognitive-search/cognitive-search.service';
+import {
+  CognitiveSearchService,
+  SearchDocumentsResult,
+} from '../cognitive-search/cognitive-search.service';
 import { OpenAiService } from '../openai/openai.service';
 import { ChatApproachContextDto, HistoryMessageDto } from './dto/chat.dto';
 
@@ -72,12 +75,7 @@ export class ChatService {
 
     // STEP 2: Retrieve relevant documents from the search index with the GPT optimized query
     // -----------------------------------------------------------------------
-    let searchDocumentsResult: {
-      query: string;
-      results: string[];
-      content: string;
-      citationIds: string[];
-    };
+    let searchDocumentsResult: SearchDocumentsResult;
 
     if (userCitationId) {
       searchDocumentsResult =
@@ -93,7 +91,7 @@ export class ChatService {
       );
     }
 
-    const { query, results, content, citationIds } = searchDocumentsResult;
+    const { query, results, content, citationSource } = searchDocumentsResult;
 
     context.suggest_followup_questions = true;
 
@@ -139,7 +137,7 @@ export class ChatService {
       stream: true,
     };
 
-    return { bodyGenerateMsg, results, citationIds };
+    return { bodyGenerateMsg, results, citationSource };
   }
 
   protected getMessageHistory(

@@ -19,10 +19,10 @@ export class ChatController {
     const {
       bodyGenerateMsg,
       results: dataPoints,
-      citationIds,
+      citationSource,
     } = await this.chatService.createChat(messages, req.context);
 
-    return { bodyGenerateMsg, dataPoints, citationIds };
+    return { bodyGenerateMsg, dataPoints, citationSource };
   }
 
   @Post('/citation')
@@ -32,14 +32,14 @@ export class ChatController {
     const {
       bodyGenerateMsg,
       results: dataPoints,
-      citationIds,
+      citationSource,
     } = await this.chatService.createChat(
       messages,
       req.context,
       req.citationId,
     );
 
-    return { bodyGenerateMsg, dataPoints, citationIds };
+    return { bodyGenerateMsg, dataPoints, citationSource };
   }
 
   @Post('/history')
