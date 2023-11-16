@@ -63,6 +63,7 @@ async function bootstrap() {
     .setTitle(configService.get('APP_NAME'))
     .setDescription(`The ${configService.get('APP_NAME')} API description`)
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const swaggerDocumentOptions: SwaggerDocumentOptions = {
