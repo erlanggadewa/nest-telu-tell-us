@@ -11,7 +11,11 @@ export interface SearchDocumentsResult {
   query: string;
   results: string[];
   content: string;
-  citationIds: string[];
+  citationSource: {
+    citationId: string;
+    sourcePage: string;
+    sourceFile: string;
+  }[];
 }
 
 @Injectable()
@@ -95,7 +99,8 @@ export class CognitiveSearchService {
         }));
 
     const results: string[] = [];
-    const citationId: string[] = [];
+    const citationSource: SearchDocumentsResult['citationSource'] = [];
+
     if (useSemanticCaption) {
       for await (const result of searchResults.results) {
         // TODO: ensure typings
@@ -105,7 +110,13 @@ export class CognitiveSearchService {
         results.push(
           `${document[this.sourcePageField]}: ${removeNewlines(captionsText)}`,
         );
-        citationId.push(document['id']);
+        console.log(document);
+
+        citationSource.push({
+          citationId: document['id'],
+          sourcePage: document[this.sourcePageField],
+          sourceFile: document['sourcefile'],
+        });
       }
     } else {
       for await (const result of searchResults.results) {
@@ -116,7 +127,13 @@ export class CognitiveSearchService {
             document[this.contentField],
           )}`,
         );
-        citationId.push(document['id']);
+        console.log(document);
+
+        citationSource.push({
+          citationId: document['id'],
+          sourcePage: document[this.sourcePageField],
+          sourceFile: document['sourcefile'],
+        });
       }
     }
     const content = results.join('\n');
@@ -124,7 +141,7 @@ export class CognitiveSearchService {
       query: queryText ?? '',
       results,
       content,
-      citationIds: citationId,
+      citationSource,
     };
   }
 
@@ -169,7 +186,8 @@ export class CognitiveSearchService {
     );
 
     const results: string[] = [];
-    const citationId: string[] = [];
+    const citationSource: SearchDocumentsResult['citationSource'] = [];
+
     if (useSemanticCaption) {
       // TODO: ensure typings
       const document = searchResults;
@@ -178,7 +196,11 @@ export class CognitiveSearchService {
       results.push(
         `${document[this.sourcePageField]}: ${removeNewlines(captionsText)}`,
       );
-      citationId.push(document['id']);
+      citationSource.push({
+        citationId: document['id'],
+        sourcePage: document[this.sourcePageField],
+        sourceFile: document['sourcefile'],
+      });
     } else {
       // TODO: ensure typings
       const document = searchResults;
@@ -187,7 +209,11 @@ export class CognitiveSearchService {
           document[this.contentField],
         )}`,
       );
-      citationId.push(document['id']);
+      citationSource.push({
+        citationId: document['id'],
+        sourcePage: document[this.sourcePageField],
+        sourceFile: document['sourcefile'],
+      });
     }
 
     const content = results.join('\n');
@@ -195,7 +221,7 @@ export class CognitiveSearchService {
       query: queryText ?? '',
       results,
       content,
-      citationIds: citationId,
+      citationSource,
     };
   }
 }
