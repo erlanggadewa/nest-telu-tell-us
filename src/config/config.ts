@@ -76,4 +76,6 @@ export const appConfigValidationSchema = Joi.object({
 
   // Database
   DATABASE_URL: Joi.string().required(),
+
+  JWT_KEY: Joi.string().required(),
 });
