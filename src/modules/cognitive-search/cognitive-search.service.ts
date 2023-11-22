@@ -110,7 +110,6 @@ export class CognitiveSearchService {
         results.push(
           `${document[this.sourcePageField]}: ${removeNewlines(captionsText)}`,
         );
-        console.log(document);
 
         citationSource.push({
           citationId: document['id'],
@@ -127,7 +126,6 @@ export class CognitiveSearchService {
             document[this.contentField],
           )}`,
         );
-        console.log(document);
 
         citationSource.push({
           citationId: document['id'],
@@ -223,5 +221,35 @@ export class CognitiveSearchService {
       content,
       citationSource,
     };
+  }
+
+  async getSummaryByCitationId(citationId: string) {
+    const searchResults = await this.searchService.searchIndex.getDocument(
+      citationId,
+      {
+        onResponse: (response) => {
+          if (response.status === 404)
+            throw new BadRequestException('Citation ID not found');
+        },
+      },
+    );
+
+    const summary = await this.openAiService.chatClient.chat.completions.create(
+      {
+        model: appConfig.azureOpenAiChatGptModel,
+        messages: [
+          {
+            role: 'user',
+            content: `create a summary of this citation in 40 words or less using this following document
+            \ntitle: ${searchResults['sourcepage']}
+            \ncontent: ${searchResults['content']}`,
+          },
+        ],
+        max_tokens: 300,
+        temperature: 0.7,
+        n: 1,
+      },
+    );
+    return summary;
   }
 }
