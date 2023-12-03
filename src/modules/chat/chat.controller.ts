@@ -46,4 +46,11 @@ export class ChatController {
   async createHistory(@Body() req: BodyCreateHistoryDto) {
     return 'method not implemented';
   }
+
+  @Post('/catalog')
+  async createMessageCatalog(@Body() req: BodyChatMessageDto) {
+    const { messages } = req;
+
+    return await this.chatService.createMessageCatalog(messages, req.context);
+  }
 }

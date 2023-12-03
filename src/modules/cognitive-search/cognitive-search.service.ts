@@ -7,7 +7,7 @@ import {
   ApproachCreateChat,
   ApproachCreateChatByCitationId,
 } from './cognitive-search.interface';
-export interface SearchDocumentsResult {
+export interface ISearchDocumentsResult {
   query: string;
   results: string[];
   content: string;
@@ -16,6 +16,32 @@ export interface SearchDocumentsResult {
     sourcePage: string;
     sourceFile: string;
   }[];
+}
+
+interface ICatalog {
+  id: string;
+  kode_klasifikasi: string;
+  kode_katalog: string;
+  subjek: string;
+  jeniskatalog: string;
+  judul: string;
+  author: string;
+  tahunterbit: number;
+  publisher_city: string;
+  publisher_name: string;
+  lokasi: string;
+  entrance_date: string;
+  supplier: string;
+  link: string;
+  rak: string;
+  rid: string;
+  abstract_content: string;
+}
+export interface ISearchDocumentsResultCatalog {
+  query: string;
+
+  results: ICatalog[];
+  content: string;
 }
 
 @Injectable()
@@ -36,7 +62,7 @@ export class CognitiveSearchService {
   async searchDocuments(
     context: ApproachCreateChat,
     query: string,
-  ): Promise<SearchDocumentsResult> {
+  ): Promise<ISearchDocumentsResult> {
     const hasText = ['text', 'hybrid', undefined].includes(
       context?.retrieval_mode,
     );
@@ -99,7 +125,7 @@ export class CognitiveSearchService {
         }));
 
     const results: string[] = [];
-    const citationSource: SearchDocumentsResult['citationSource'] = [];
+    const citationSource: ISearchDocumentsResult['citationSource'] = [];
 
     if (useSemanticCaption) {
       for await (const result of searchResults.results) {
@@ -147,7 +173,7 @@ export class CognitiveSearchService {
     context: ApproachCreateChatByCitationId,
     query: string,
     userCitationId: string,
-  ): Promise<SearchDocumentsResult> {
+  ): Promise<ISearchDocumentsResult> {
     const hasText = ['text', 'hybrid', undefined].includes(
       context?.retrieval_mode,
     );
@@ -184,7 +210,7 @@ export class CognitiveSearchService {
     );
 
     const results: string[] = [];
-    const citationSource: SearchDocumentsResult['citationSource'] = [];
+    const citationSource: ISearchDocumentsResult['citationSource'] = [];
 
     if (useSemanticCaption) {
       // TODO: ensure typings
@@ -251,5 +277,67 @@ export class CognitiveSearchService {
       },
     );
     return summary;
+  }
+
+  async searchCatalog(
+    context: ApproachCreateChat,
+    query: string,
+  ): Promise<ISearchDocumentsResultCatalog> {
+    const hasText = ['text', 'hybrid', undefined].includes(
+      context?.retrieval_mode,
+    );
+    const hasVectors = ['vectors', 'hybrid', undefined].includes(
+      context?.retrieval_mode,
+    );
+    const useSemanticCaption =
+      parseBoolean(context?.semantic_captions) && hasText;
+    const top = context?.top ? Number(context?.top) : 5;
+
+    // If retrieval mode includes vectors, compute an embedding for the query
+    let queryVector;
+    if (hasVectors) {
+      const openAiEmbeddings = await this.openAiService.getEmbeddings();
+
+      const result = await openAiEmbeddings.create({
+        model: this.embeddingModel,
+        input: query!,
+      });
+      queryVector = result.data[0].embedding;
+    }
+
+    // Only keep the text query if the retrieval mode uses text, otherwise drop it
+    const queryText = hasText ? query : '';
+
+    // Use semantic L2 reranker if requested and if retrieval mode is text or hybrid (vectors + text)
+    const searchResults = await (context?.semantic_ranker && hasText
+      ? this.searchService.searchIndexCatalog.search(queryText, {
+          queryType: 'semantic',
+          queryLanguage: 'en-us',
+          speller: 'lexicon',
+          semanticConfiguration: 'default',
+          top,
+          captions: useSemanticCaption
+            ? 'extractive|highlight-false'
+            : undefined,
+        })
+      : this.searchService.searchIndexCatalog.search(queryText, {
+          top,
+        }));
+
+    const results: ICatalog[] = [];
+
+    for await (const result of searchResults.results) {
+      // TODO: ensure typings
+      const document = result.document as any;
+      delete document.abstract_content;
+      results.push(document);
+    }
+    const content = JSON.stringify(results);
+
+    return {
+      query: queryText ?? '',
+      results,
+      content,
+    };
   }
 }
