@@ -1,5 +1,12 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, OmitType } from '@nestjs/swagger';
 import { ChatApproachContextDto } from 'src/modules/chat/dto/chat.dto';
+class ContextCatalog extends OmitType(ChatApproachContextDto, [
+  'exclude_category',
+  'prompt_template',
+  'prompt_template_prefix',
+  'prompt_template_suffix',
+  'suggest_followup_questions',
+]) {}
 
 export class BodyGetCatalogDto {
   @ApiPropertyOptional({
@@ -13,5 +20,5 @@ export class BodyGetCatalogDto {
   query?: string;
 
   @ApiPropertyOptional()
-  context?: ChatApproachContextDto;
+  context?: ContextCatalog;
 }
