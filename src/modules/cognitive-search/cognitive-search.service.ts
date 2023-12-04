@@ -18,7 +18,7 @@ export interface ISearchDocumentsResult {
   }[];
 }
 
-interface ICatalog {
+export interface ICatalog {
   id: string;
   kode_klasifikasi: string;
   kode_katalog: string;
