@@ -173,7 +173,7 @@ export class ChatService {
       messages: msgForGenerateAnswer,
       temperature: Number(context?.temperature ?? 0.7),
       n: 1,
-      stream: true,
+      stream: context.stream ?? true,
     };
 
     return { bodyGenerateMsg, results, citationSource };
@@ -317,14 +317,9 @@ export class ChatService {
       messages: msgForGenerateAnswer,
       temperature: Number(context?.temperature ?? 0.7),
       n: 1,
-      stream: false,
+      stream: context.stream ?? true,
     };
 
-    const chatResponse =
-      await this.openAiService.chatClient.chat.completions.create(
-        bodyGenerateMsg,
-      );
-
-    return chatResponse;
+    return bodyGenerateMsg;
   }
 }

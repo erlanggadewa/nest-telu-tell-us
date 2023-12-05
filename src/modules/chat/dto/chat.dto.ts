@@ -11,15 +11,15 @@ export class HistoryMessageDto {
 }
 
 export class ChatByCitationIdApproachContextDto {
-  @ApiPropertyOptional({ default: true })
+  @ApiPropertyOptional({ default: false })
   suggest_followup_questions?: boolean;
-  @ApiPropertyOptional({ default: true })
+  @ApiPropertyOptional({ default: false })
   semantic_ranker?: boolean;
   @ApiPropertyOptional({ default: 0.7 })
   temperature?: number;
   @ApiPropertyOptional({
     enum: ['hybrid', 'text', 'vectors'],
-    default: 'hybrid',
+    default: 'text',
   })
   @IsEnum(['hybrid', 'text', 'vectors'])
   retrieval_mode?: 'hybrid' | 'text' | 'vectors';
@@ -31,6 +31,8 @@ export class ChatByCitationIdApproachContextDto {
   prompt_template_prefix?: string;
   @ApiPropertyOptional({ default: null })
   prompt_template_suffix?: string;
+  @ApiPropertyOptional({ default: true })
+  stream?: boolean;
 }
 
 export class ChatApproachContextDto extends ChatByCitationIdApproachContextDto {
@@ -53,15 +55,6 @@ export class BodyChatMessageDto {
       {
         role: 'user',
         content: 'Darimana sumber-sumber tugas akhir berasal',
-      },
-      {
-        role: 'assistant',
-        content:
-          'Sumber-sumber tugas akhir dapat berasal dari berbagai sumber, seperti:\n- Buku PA-16.pdf [4]: Sumber penelitian tugas akhir dapat berasal dari kebutuhan teknologi informasi di Universitas Telkom dan hasil riset dan inovasi di bidang teknologi informasi.\n- Buku PA - 6706201141 - Annisa Ayu Nurarifa-15.pdf [4]: Sumber-sumber tugas akhir dapat berasal dari kerja sama dengan institusi dan perusahaan lain dalam memberikan layanan pelatihan teknologi informasi.\n- Buku PA - 6706201141 - Annisa Ayu Nurarifa-28.pdf [4]: Sumber-sumber tugas akhir dapat berasal dari data dan informasi yang terdapat dalam dashboard sumber daya, karir, kompetensi, kualifikasi, dan sarana dan prasarana di Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi Republik Indonesia.\n\nNext Questions:\n1. Apa saja kebutuhan teknologi informasi di Universitas Telkom? [4]\n2. Apa saja portfolio pelatihan yang pernah dilakukan oleh PT Adi Data Utama? [4]\n3. Apa saja informasi yang terdapat dalam dashboard sumber daya, karir, kompetensi, kualifikasi, dan sarana dan prasarana di Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi Republik Indonesia? [4]',
-      },
-      {
-        role: 'user',
-        content: 'Berikan 3 contoh tugas akhir bertema teknologi',
       },
     ],
   })
