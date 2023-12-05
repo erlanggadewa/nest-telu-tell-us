@@ -11,15 +11,15 @@ export class HistoryMessageDto {
 }
 
 export class ChatByCitationIdApproachContextDto {
-  @ApiPropertyOptional({ default: false })
+  @ApiPropertyOptional({ default: true })
   suggest_followup_questions?: boolean;
-  @ApiPropertyOptional({ default: false })
+  @ApiPropertyOptional({ default: true })
   semantic_ranker?: boolean;
   @ApiPropertyOptional({ default: 0.7 })
   temperature?: number;
   @ApiPropertyOptional({
     enum: ['hybrid', 'text', 'vectors'],
-    default: 'text',
+    default: 'hybrid',
   })
   @IsEnum(['hybrid', 'text', 'vectors'])
   retrieval_mode?: 'hybrid' | 'text' | 'vectors';
