@@ -16,10 +16,7 @@ Each source has a name followed by colon and the actual information, always incl
 {injected_prompt}
 `;
 
-const FOLLOW_UP_QUESTIONS_PROMPT_CONTENT = `Generate three very brief follow-up questions that the user would likely ask next about rentals.
-Use double angle brackets to reference the questions, e.g. <<Am I allowed to invite friends for a party?>>.
-Try not to repeat questions that have already been asked.
-Only generate questions and do not generate any text before or after the questions, such as 'Next Questions'`;
+const FOLLOW_UP_QUESTIONS_PROMPT_CONTENT = `Generate three very brief follow-up questions that the user would likely ask next. You must use curly brackets to reference the questions because this format can only be read by the user, e.g. {What is microservices?} {What are the advantages of microservices?} {What are the disadvantages of microservices?}. Try not to repeat questions that have already been asked.`;
 
 const QUERY_PROMPT_TEMPLATE = `Below is a history of the conversation so far, and a new question asked by the user that needs to be answered by searching in a knowledge base about terms of service, privacy policy, and questions about support requests.
 Generate a search query based on the conversation and the new question.

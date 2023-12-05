@@ -51,6 +51,11 @@ export class ChatController {
   async createMessageCatalog(@Body() req: BodyChatMessageDto) {
     const { messages } = req;
 
-    return await this.chatService.createMessageCatalog(messages, req.context);
+    const bodyGenerateMsg = await this.chatService.createMessageCatalog(
+      messages,
+      req.context,
+    );
+
+    return bodyGenerateMsg;
   }
 }
