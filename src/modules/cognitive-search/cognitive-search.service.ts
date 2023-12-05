@@ -266,7 +266,7 @@ export class CognitiveSearchService {
         messages: [
           {
             role: 'user',
-            content: `create a summary of this citation in 40 words or less using this following document
+            content: `create a summary of this citation in 200 words or less using this following document
             \ntitle: ${searchResults['sourcepage']}
             \ncontent: ${searchResults['content']}`,
           },
