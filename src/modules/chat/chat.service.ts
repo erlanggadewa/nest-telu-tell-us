@@ -129,8 +129,6 @@ export class ChatService {
 
     const { query, results, content, citationSource } = searchDocumentsResult;
 
-    context.suggest_followup_questions = true;
-
     const followUpQuestionsPrompt = context?.suggest_followup_questions
       ? FOLLOW_UP_QUESTIONS_PROMPT_CONTENT
       : '';
