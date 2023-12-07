@@ -1,6 +1,7 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CognitiveSearchService } from './cognitive-search.service';
+import { SummaryDto } from './dto/summary.dto';
 
 @ApiTags('cognitive-search')
 @Controller('cognitive-search')
@@ -9,10 +10,11 @@ export class CognitiveSearchController {
     private readonly cognitiveSearchService: CognitiveSearchService,
   ) {}
 
-  @Get('/summary/:citationId')
-  async getSummaryByCitationId(@Param('citationId') citationId: string) {
-    const summary =
-      await this.cognitiveSearchService.getSummaryByCitationId(citationId);
+  @Post('/summary')
+  async getSummaryByCitationId(@Body() body: SummaryDto) {
+    const summary = await this.cognitiveSearchService.getSummaryByCitationId(
+      body.citationId,
+    );
     return summary.choices[0].message.content;
   }
 }

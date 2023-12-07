@@ -7,6 +7,7 @@ import {
   ApproachCreateChat,
   ApproachCreateChatByCitationId,
 } from './cognitive-search.interface';
+import { log } from 'console';
 export interface ISearchDocumentsResult {
   query: string;
   results: string[];
@@ -252,16 +253,20 @@ export class CognitiveSearchService {
     };
   }
 
-  async getSummaryByCitationId(citationId: string) {
-    const searchResults = await this.searchService.searchIndex.getDocument(
-      citationId,
-      {
+  async getSummaryByCitationId(citationIds: string[]) {
+    let contents = [];
+    let sourcepage = [];
+    for (const citationId of citationIds) {
+      const doc = await this.searchService.searchIndex.getDocument(citationId, {
         onResponse: (response) => {
           if (response.status === 404)
             throw new BadRequestException('Citation ID not found');
         },
-      },
-    );
+      });
+      contents.push(doc['content']);
+      sourcepage.push(doc['sourcepage']);
+    }
+    const content = { sourcepage: sourcepage[0], content: contents.join('\n') };
 
     const summary = await this.openAiService.chatClient.chat.completions.create(
       {
@@ -270,8 +275,8 @@ export class CognitiveSearchService {
           {
             role: 'user',
             content: `create a summary of this citation using indonesian language in 200 words or less using this following document
-            \ntitle: ${searchResults['sourcepage']}
-            \ncontent: ${searchResults['content']}`,
+            \ntitle: ${content['sourcepage']}
+            \ncontent: ${content['content']}`,
           },
         ],
         max_tokens: 300,
