@@ -306,7 +306,7 @@ export class CognitiveSearchService {
 
     // Use semantic L2 reranker if requested and if retrieval mode is text or hybrid (vectors + text)
     const searchResults = await this.searchService.searchIndexCatalog.search(
-      'implementation of microservice at Telkom University',
+      queryText,
       {
         queryType: 'semantic',
         queryLanguage: 'en-us',
