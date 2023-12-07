@@ -20,6 +20,9 @@ export interface AppConfig {
   azureCognitiveKey: string;
   azureOpenAiApiVersion: string;
   feUrl: string;
+  azureSearchIndexCatalog: string;
+  azureSearchServiceCatalog: string;
+  azureCognitifKeyCatalog: string;
 }
 
 export const appConfig: AppConfig = {
@@ -45,6 +48,9 @@ export const appConfig: AppConfig = {
   azureOpenAiApiVersion: process.env.AZURE_OPENAI_API_VERSION || '2023-05-15',
   appName: process.env.APP_NAME || '',
   feUrl: process.env.FE_URL || '',
+  azureSearchIndexCatalog: process.env.AZURE_SEARCH_INDEX_CATALOG,
+  azureSearchServiceCatalog: process.env.AZURE_SEARCH_SERVICE_CATALOG,
+  azureCognitifKeyCatalog: process.env.AZURE_COGNITIF_API_KEY_CATALOG,
 };
 
 export const appConfigValidationSchema = Joi.object({
@@ -78,4 +84,8 @@ export const appConfigValidationSchema = Joi.object({
   DATABASE_URL: Joi.string().required(),
 
   JWT_KEY: Joi.string().required(),
+
+  AZURE_SEARCH_INDEX_CATALOG: Joi.string().required(),
+  AZURE_SEARCH_SERVICE_CATALOG: Joi.string().required(),
+  AZURE_COGNITIF_API_KEY_CATALOG: Joi.string().required(),
 });

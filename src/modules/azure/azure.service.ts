@@ -10,6 +10,7 @@ import { appConfig } from 'src/config/config';
 @Injectable()
 export class AzureService {
   searchIndex: SearchClient<any>;
+  searchIndexCatalog: SearchClient<any>;
   blobContainer: ContainerClient;
   constructor() {
     // Use the current user identity to authenticate with Azure OpenAI, Cognitive Search and Blob Storage
@@ -18,6 +19,9 @@ export class AzureService {
     // const defaultAzureCredential = new DefaultAzureCredential();
     const azureCognitiveKey = new AzureKeyCredential(
       appConfig.azureCognitiveKey,
+    );
+    const azureCognitiveKeyCatalog = new AzureKeyCredential(
+      appConfig.azureCognitifKeyCatalog,
     );
     const azureBlobServiceKey = new StorageSharedKeyCredential(
       appConfig.azureStorageAccount,
@@ -36,6 +40,12 @@ export class AzureService {
     );
     this.blobContainer = blobServiceClient.getContainerClient(
       appConfig.azureStorageContainer,
+    );
+
+    this.searchIndexCatalog = new SearchClient<any>(
+      `https://${appConfig.azureSearchServiceCatalog}.search.windows.net`,
+      appConfig.azureSearchIndexCatalog,
+      azureCognitiveKeyCatalog,
     );
   }
 }

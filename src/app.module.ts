@@ -7,6 +7,7 @@ import { appConfigValidationSchema } from './config/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { AzureModule } from './modules/azure/azure.module';
 import { BlobStorageModule } from './modules/blob-storage/blob-storage.module';
+import { CatalogModule } from './modules/catalog/catalog.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { CognitiveSearchModule } from './modules/cognitive-search/cognitive-search.module';
 import { OpenAiModule } from './modules/openai/openai.module';
@@ -28,6 +29,7 @@ import { UsersModule } from './modules/users/users.module';
     OpenAiModule,
     CognitiveSearchModule,
     BlobStorageModule,
+    CatalogModule,
   ],
   controllers: [AppController],
 })
