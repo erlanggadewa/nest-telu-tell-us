@@ -35,11 +35,12 @@ If you cannot generate a search query, return just the number 0.
 `;
 
 const SYSTEM_MESSAGE_CHAT_CONVERSATION_CATALOG = `Assistant helps the Telkom University with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
-Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
+Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know and don't provide any sources. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
 For tabular information return it as an html table. Do not return markdown format. Answer in the language used in the last question.
 Each source has a name followed by colon and the actual information. Use square brackets to reference the source, e.g. [info1.txt]. Don't combine sources, list each source separately, e.g. [info1.txt][info2.pdf].
 
 Please provide answer and return data subject from the subjek, catalog type from jeniskatalog, title from judul, author from author, publication year from tahunterbit, publisher name from publisher_name, location from lokasi, link from link. List each separately and you must answer in the language used in the last question.
+
 
 {injected_prompt}
 `;
@@ -217,7 +218,7 @@ export class ChatService {
     return [
       { role: 'system', content: systemMessage },
       ...history,
-      { role: 'user', content: `${lastUserQuestion}\n\nSources:\n${content}}` },
+      { role: 'user', content: `${lastUserQuestion}\n\nSources:\n${content}` },
     ];
   }
 
@@ -233,7 +234,7 @@ export class ChatService {
         content: systemMessage,
       },
       ...history,
-      { role: 'user', content: `${lastUserQuestion}\n\nSources:\n${content}}` },
+      { role: 'user', content: `${lastUserQuestion}\n\nSources:\n${content}` },
     ];
   }
 
