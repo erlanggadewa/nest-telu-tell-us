@@ -172,7 +172,7 @@ export class CognitiveSearchService {
   async searchDocumentByCitationId(
     context: ApproachCreateChatByCitationId,
     query: string,
-    userCitationId: string,
+    userCitationId: string[],
   ): Promise<ISearchDocumentsResult> {
     const hasText = ['text', 'hybrid', undefined].includes(
       context?.retrieval_mode,
@@ -198,49 +198,52 @@ export class CognitiveSearchService {
     // Only keep the text query if the retrieval mode uses text, otherwise drop it
     const queryText = hasText ? query : '';
 
-    // Use semantic L2 reranker if requested and if retrieval mode is text or hybrid (vectors + text)
-    const searchResults = await this.searchService.searchIndex.getDocument(
-      userCitationId,
-      {
+    let searchResults = [];
+    for (const citationId of userCitationId) {
+      // Use semantic L2 reranker if requested and if retrieval mode is text or hybrid (vectors + text)
+      const doc = await this.searchService.searchIndex.getDocument(citationId, {
         onResponse: (response) => {
           if (response.status === 404)
             throw new BadRequestException('Citation ID not found');
         },
-      },
-    );
+      });
+      searchResults.push(doc);
+    }
 
     const results: string[] = [];
     const citationSource: ISearchDocumentsResult['citationSource'] = [];
-
-    if (useSemanticCaption) {
-      // TODO: ensure typings
-      const document = searchResults;
-      const captions = document['@search.captions'];
-      const captionsText = captions?.map((c: any) => c.text).join(' . ');
-      results.push(
-        `${document[this.sourcePageField]}: ${removeNewlines(captionsText)}`,
-      );
-      citationSource.push({
-        citationId: document['id'],
-        sourcePage: document[this.sourcePageField],
-        sourceFile: document['sourcefile'],
-      });
-    } else {
-      // TODO: ensure typings
-      const document = searchResults;
-      results.push(
-        `${document[this.sourcePageField]}: ${removeNewlines(
-          document[this.contentField],
-        )}`,
-      );
-      citationSource.push({
-        citationId: document['id'],
-        sourcePage: document[this.sourcePageField],
-        sourceFile: document['sourcefile'],
-      });
+    for (const searchResult of searchResults) {
+      if (useSemanticCaption) {
+        // TODO: ensure typings
+        const document = searchResult;
+        const captions = document['@search.captions'];
+        const captionsText = captions?.map((c: any) => c.text).join(' . ');
+        results.push(
+          `${document[this.sourcePageField]}: ${removeNewlines(captionsText)}`,
+        );
+        citationSource.push({
+          citationId: document['id'],
+          sourcePage: document[this.sourcePageField],
+          sourceFile: document['sourcefile'],
+        });
+      } else {
+        // TODO: ensure typings
+        const document = searchResult;
+        results.push(
+          `${document[this.sourcePageField]}: ${removeNewlines(
+            document[this.contentField],
+          )}`,
+        );
+        citationSource.push({
+          citationId: document['id'],
+          sourcePage: document[this.sourcePageField],
+          sourceFile: document['sourcefile'],
+        });
+      }
     }
 
     const content = results.join('\n');
+
     return {
       query: queryText ?? '',
       results,

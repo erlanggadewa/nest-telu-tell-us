@@ -16,12 +16,19 @@ Each source has a name followed by colon and the actual information, always incl
 {injected_prompt}
 `;
 
-const FOLLOW_UP_QUESTIONS_PROMPT_CONTENT = `Generate three very brief follow-up questions that the user would likely ask next. You must use curly brackets to reference the questions, e.g. {1. What is microservices?} {2. What are the advantages of microservices?} {3. What are the disadvantages of microservices?}. Try not to repeat questions that have already been asked.`;
+const FOLLOW_UP_QUESTIONS_PROMPT_CONTENT = `Generate 3 very brief follow-up questions that the user would likely ask next.
+Enclose the follow-up questions in double angle brackets. Example:
+<<Am I allowed to invite friends for a party?>>
+<<How can I ask for a refund?>>
+<<What If I break something?>>
+
+Do no repeat questions that have already been asked.
+Make sure the last question ends with ">>".`;
 
 const QUERY_PROMPT_TEMPLATE = `Below is a history of the conversation so far, and a new question asked by the user that needs to be answered by searching in a knowledge base about terms of service, privacy policy, and questions about support requests.
 Generate a search query based on the conversation and the new question.
 Do not include cited source filenames and document names e.g info.txt or doc.pdf in the search query terms.
-Do not include any text inside [] or {} in the search query terms.
+Do not include any text inside [] or <<>> in the search query terms.
 Do not include any special characters like '+'.
 If the question is not in English, translate the question to English before generating the search query.
 If you cannot generate a search query, return just the number 0.
@@ -82,7 +89,7 @@ export class ChatService {
   async createChat(
     history: HistoryMessageDto[],
     context: ChatApproachContextDto = {},
-    userCitationId?: string,
+    userCitationId?: string[],
   ) {
     const userQuery =
       'Generate search query for: ' + history[history.length - 1].content;
