@@ -93,36 +93,25 @@ export class CognitiveSearchService {
     const queryText = hasText ? query.replace('"', '') : '';
 
     // Use semantic L2 reranker if requested and if retrieval mode is text or hybrid (vectors + text)
-    const searchResults = await (context?.semantic_ranker && hasText
-      ? this.searchService.searchIndex.search(queryText, {
-          filter,
-          queryType: 'semantic',
-          queryLanguage: 'en-us',
-          speller: 'lexicon',
-          semanticConfiguration: 'default',
-          top,
-          captions: useSemanticCaption
-            ? 'extractive|highlight-false'
-            : undefined,
-          vectors: [
-            {
-              value: queryVector,
-              kNearestNeighborsCount: queryVector ? 50 : undefined,
-              fields: queryVector ? ['embedding'] : undefined,
-            },
-          ],
-        })
-      : this.searchService.searchIndex.search(queryText, {
-          filter,
-          top,
-          vectors: [
-            {
-              value: queryVector,
-              kNearestNeighborsCount: queryVector ? 50 : undefined,
-              fields: queryVector ? ['embedding'] : undefined,
-            },
-          ],
-        }));
+    const searchResults = await this.searchService.searchIndex.search(
+      queryText,
+      {
+        filter,
+        queryType: 'semantic',
+        queryLanguage: 'en-us',
+        speller: 'lexicon',
+        semanticConfiguration: 'default',
+        top,
+        captions: useSemanticCaption ? 'extractive|highlight-false' : undefined,
+        vectors: [
+          {
+            value: queryVector,
+            kNearestNeighborsCount: queryVector ? 50 : undefined,
+            fields: queryVector ? ['embedding'] : undefined,
+          },
+        ],
+      },
+    );
 
     const results: string[] = [];
     const citationSource: ISearchDocumentsResult['citationSource'] = [];
@@ -316,20 +305,17 @@ export class CognitiveSearchService {
     const queryText = hasText ? query.replace('"', '') : '';
 
     // Use semantic L2 reranker if requested and if retrieval mode is text or hybrid (vectors + text)
-    const searchResults = await (context?.semantic_ranker && hasText
-      ? this.searchService.searchIndexCatalog.search(queryText, {
-          queryType: 'semantic',
-          queryLanguage: 'en-us',
-          speller: 'lexicon',
-          semanticConfiguration: 'default',
-          top,
-          captions: useSemanticCaption
-            ? 'extractive|highlight-false'
-            : undefined,
-        })
-      : this.searchService.searchIndexCatalog.search(queryText, {
-          top,
-        }));
+    const searchResults = await this.searchService.searchIndexCatalog.search(
+      'implementation of microservice at Telkom University',
+      {
+        queryType: 'semantic',
+        queryLanguage: 'en-us',
+        speller: 'lexicon',
+        semanticConfiguration: 'default',
+        top,
+        captions: useSemanticCaption ? 'extractive|highlight-false' : undefined,
+      },
+    );
 
     const results: ICatalog[] = [];
 

@@ -34,6 +34,15 @@ If the question is not in English, translate the question to English before gene
 If you cannot generate a search query, return just the number 0.
 `;
 
+const QUERY_PROMPT_TEMPLATE_CATALOG = `Below is a history of the conversation so far, and a new question asked by the user that needs to be answered by searching in a knowledge base about terms of service, privacy policy, and questions about support requests.
+Generate a search key query for cognitive search based on the conversation and the new question.
+Do not include cited source filenames and document names e.g info.txt or doc.pdf in the search query terms.
+Do not include any text inside [] or <<>> in the search query terms.
+Do not include any special characters like '+'.
+If the question is not in English, translate the question to English before generating the search query.
+If you cannot generate a search query, return just the number 0.
+`;
+
 const SYSTEM_MESSAGE_CHAT_CONVERSATION_CATALOG = `Assistant helps the Telkom University with support questions regarding terms of service, privacy policy, and questions about support requests. Be brief in your answers.
 Answer ONLY with the facts listed in the list of sources below. If there isn't enough information below, say you don't know and don't provide any sources. Do not generate answers that don't use the sources below. If asking a clarifying question to the user would help, ask the question.
 For tabular information return it as an html table. Do not return markdown format. Answer in the language used in the last question.
@@ -201,7 +210,7 @@ export class ChatService {
     return [
       {
         role: 'system',
-        content: QUERY_PROMPT_TEMPLATE,
+        content: QUERY_PROMPT_TEMPLATE_CATALOG,
       },
       ...QUERY_PROMPT_FEW_SHOTS_CATALOG,
       ...history,
