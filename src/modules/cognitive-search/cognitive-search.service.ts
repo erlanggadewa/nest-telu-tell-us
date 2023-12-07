@@ -7,7 +7,6 @@ import {
   ApproachCreateChat,
   ApproachCreateChatByCitationId,
 } from './cognitive-search.interface';
-import { log } from 'console';
 export interface ISearchDocumentsResult {
   query: string;
   results: string[];
@@ -91,7 +90,7 @@ export class CognitiveSearchService {
     }
 
     // Only keep the text query if the retrieval mode uses text, otherwise drop it
-    const queryText = hasText ? query : '';
+    const queryText = hasText ? query.replace('"', '') : '';
 
     // Use semantic L2 reranker if requested and if retrieval mode is text or hybrid (vectors + text)
     const searchResults = await (context?.semantic_ranker && hasText
@@ -197,7 +196,7 @@ export class CognitiveSearchService {
     }
 
     // Only keep the text query if the retrieval mode uses text, otherwise drop it
-    const queryText = hasText ? query : '';
+    const queryText = hasText ? query.replace('"', '') : '';
 
     let searchResults = [];
     for (const citationId of userCitationId) {
@@ -314,7 +313,7 @@ export class CognitiveSearchService {
     }
 
     // Only keep the text query if the retrieval mode uses text, otherwise drop it
-    const queryText = hasText ? query : '';
+    const queryText = hasText ? query.replace('"', '') : '';
 
     // Use semantic L2 reranker if requested and if retrieval mode is text or hybrid (vectors + text)
     const searchResults = await (context?.semantic_ranker && hasText
