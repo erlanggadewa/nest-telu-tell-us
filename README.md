@@ -1,3 +1,11 @@
+
+**Back end service for Telu Tell Us APP**
+
+Telu Tell Us is a chatbot application that utilizes assistance from OpenAI, with its dataset sourced from the resources available at the Open Library of Telkom University.
+
+demo : https://youtu.be/hyQijyaI1Hw
+
+<br>
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
